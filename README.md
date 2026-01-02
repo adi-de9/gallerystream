@@ -12,7 +12,7 @@ A real-time, interactive image gallery application built with React, InstantDB, 
 
 1.  **Clone the repository**
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/adi-de9/gallerystream
     cd gallerystream
     ```
 
@@ -27,7 +27,6 @@ A real-time, interactive image gallery application built with React, InstantDB, 
     VITE_INSTANTDB_APP_ID=your_instantdb_app_id
     VITE_UNSPLASH_ACCESS_KEY=your_unsplash_access_key
     ```
-    > **Note:** If you don't have an Unsplash API key, the application will automatically fall back to high-quality mock data using Lorem Picsum and Dicebear.
 
 4.  **Run Development Server**
     ```bash
