@@ -1,19 +1,17 @@
 import { db } from '../lib/instantdb';
 
+// Add pagination and infinite scroll
 export const useFeedInteractions = () => {
   const { isLoading, error, data } = db.useQuery({
     reactions: {
         $: {
             limit: 30, 
-            order: { serverCreatedAt: 'desc' } // Note: InstantDB often uses serverCreatedAt or we use client 'createdAt'
-            // For now, assume we sort client-side if server sorting is complex in free tier or specific version. 
-            // InstantDB usually supports logic in query. Let's try simple query first.
+            order: { serverCreatedAt: 'desc' }
         }
     },
     comments: {
         $: {
             limit: 30,
-            // order: { serverCreatedAt: 'desc' }
         }
     },
   });

@@ -3,11 +3,10 @@ import { X, Send, Smile, Plus, Trash2 } from 'lucide-react';
 import EmojiPicker from 'emoji-picker-react';
 import { useImageInteractions } from '../hooks/useImageInteractions';
 import { useUserStore } from '../store/useUserStore';
-
-const EMOJIS = ['❤️', '🔥', '👏', '😂', '😮'];
+import { EMOJIS } from '../utils/constants';
 
 const ImageModal = ({ image, onClose }) => {
-  const { reactions, comments, addReaction, addComment, deleteReaction, deleteComment } = useImageInteractions(image.id);
+  const { reactions, comments, addReaction, addComment, deleteComment } = useImageInteractions(image.id);
   const { userId } = useUserStore();
   const [commentText, setCommentText] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
