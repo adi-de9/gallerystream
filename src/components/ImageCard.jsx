@@ -30,25 +30,27 @@ const ImageCard = ({ image, viewMode, onClick }) => {
     return (
       <div 
         onClick={handleClick}
-        className="bg-white rounded-xl border border-gray-200 p-4 flex gap-4 hover:shadow-md transition-shadow cursor-pointer"
+        className="bg-white rounded-xl border border-gray-200 p-4 flex gap-4 hover:shadow-lg transition-all duration-300 cursor-pointer hover:-translate-y-0.5"
       >
-        <img 
-          src={image.urls.small} 
-          alt={image.alt_description} 
-          className="w-32 h-32 object-cover rounded-lg shrink-0"
-        />
+        <div className="w-32 h-32 overflow-hidden rounded-lg shrink-0 relative group/img">
+          <img 
+            src={image.urls.small} 
+            alt={image.alt_description} 
+            className="w-full h-full object-cover transition-transform duration-300 group-hover/img:scale-110"
+          />
+        </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-gray-900 truncate">{image.alt_description || 'Untitled'}</h3>
           <p className="text-sm text-gray-500 mt-1">@{image.user.name.toLowerCase().replace(/\s+/g, '_')}</p>
           <div className="flex items-center gap-4 mt-3">
             {reactionStats.totalReactions > 0 && (
-              <div className="flex items-center gap-1 text-gray-600">
+              <div className="flex items-center gap-1 text-gray-600 transition-transform duration-200 hover:scale-110">
                 <Heart size={16} />
                 <span className="text-sm">{reactionStats.totalReactions}</span>
               </div>
             )}
             {comments.length > 0 && (
-              <div className="flex items-center gap-1 text-gray-600">
+              <div className="flex items-center gap-1 text-gray-600 transition-transform duration-200 hover:scale-110">
                 <MessageCircle size={16} />
                 <span className="text-sm">{comments.length}</span>
               </div>
@@ -62,16 +64,17 @@ const ImageCard = ({ image, viewMode, onClick }) => {
   return (
     <div 
       onClick={handleClick}
-      className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group"
+      className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group hover:-translate-y-1"
     >
       {/* Image */}
-      <div className="aspect-[3/4] relative overflow-hidden bg-gray-100">
+      <div className="aspect-3/4 relative overflow-hidden bg-gray-100">
         <img 
           src={image.urls.small} 
           alt={image.alt_description} 
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           loading="lazy"
         />
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />
       </div>
 
       {/* Metadata */}
@@ -85,21 +88,21 @@ const ImageCard = ({ image, viewMode, onClick }) => {
         {/* Inline Reactions */}
         <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100">
           {reactionStats.totalReactions > 0 && (
-            <div className="flex items-center gap-1.5 text-gray-700">
+            <div className="flex items-center gap-1.5 text-gray-700 transition-transform duration-200 hover:scale-110">
               <Heart size={16} className="text-red-500" fill="currentColor" />
               <span className="text-sm font-medium">{reactionStats.totalReactions}</span>
             </div>
           )}
           
           {reactionStats.topEmojis.map(([emoji, count]) => (
-            <div key={emoji} className="flex items-center gap-1">
+            <div key={emoji} className="flex items-center gap-1 transition-transform duration-200 hover:scale-125">
               <span className="text-base">{emoji}</span>
               <span className="text-sm text-gray-600">{count}</span>
             </div>
           ))}
 
           {comments.length > 0 && (
-            <div className="flex items-center gap-1.5 text-gray-700 ml-auto">
+            <div className="flex items-center gap-1.5 text-gray-700 ml-auto transition-transform duration-200 hover:scale-110">
               <MessageCircle size={16} />
               <span className="text-sm font-medium">{comments.length}</span>
             </div>

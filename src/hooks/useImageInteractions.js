@@ -63,6 +63,10 @@ export const useImageInteractions = (imageId) => {
     );
   };
 
+  const deleteComment = (commentId) => {
+    db.transact(db.tx.comments[commentId].delete());
+  };
+
   return {
     isLoading,
     error,
@@ -70,5 +74,6 @@ export const useImageInteractions = (imageId) => {
     comments: data?.comments || [],
     addReaction,
     addComment,
+    deleteComment,
   };
 };

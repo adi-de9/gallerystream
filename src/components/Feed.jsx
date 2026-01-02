@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import  { memo, useMemo } from 'react';
 import { useFeedInteractions } from '../hooks/useFeedInteractions';
 import { Heart } from 'lucide-react';
 
@@ -56,17 +56,21 @@ const Feed = () => {
 
   return (
     <div className="space-y-3">
-      {feedItems.map((item) => {
+      {feedItems.map((item, index) => {
         const initial = item.userName.charAt(0).toUpperCase();
         const bgColor = getUserColor(item.userName);
 
         return (
           <div 
             key={item.id} 
-            className="flex gap-3 animate-in slide-in-from-right-2 duration-300 hover:bg-gray-50 p-2 rounded-lg -mx-2 transition-colors"
+            className="flex gap-3 p-2 rounded-lg -mx-2 transition-all duration-300 hover:bg-gray-50 hover:shadow-sm hover:-translate-x-1 animate-in fade-in slide-in-from-bottom-3"
+            style={{
+              animationDelay: `${index * 50}ms`,
+              animationFillMode: 'backwards'
+            }}
           >
             {/* User Avatar */}
-            <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${bgColor} flex items-center justify-center text-white font-semibold text-sm shrink-0`}>
+            <div className={`w-10 h-10 rounded-full bg-linear-to-br ${bgColor} flex items-center justify-center text-white font-semibold text-sm shrink-0 transition-transform duration-200 hover:scale-110`}>
               {initial}
             </div>
 
@@ -79,7 +83,7 @@ const Feed = () => {
                     {item.type === 'reaction' ? (
                       <>
                         {' '}reacted{' '}
-                        <span className="text-base">{item.emoji}</span>
+                        <span className="text-base inline-block transition-transform duration-200 hover:scale-125">{item.emoji}</span>
                         {' '}to{' '}
                         <span className="text-blue-600 hover:underline cursor-pointer">
                           image
@@ -97,7 +101,7 @@ const Feed = () => {
 
                 {/* Thumbnail */}
                 {item.imageUrl && (
-                  <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0">
+                  <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0 transition-transform duration-200 hover:scale-105 hover:shadow-md">
                     <img 
                       src={item.imageUrl} 
                       alt="Context" 
@@ -114,4 +118,4 @@ const Feed = () => {
   );
 };
 
-export default React.memo(Feed);
+export default memo(Feed);

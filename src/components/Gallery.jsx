@@ -1,13 +1,13 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useEffect, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 import ImageModal from './ImageModal';
 import ImageCard from './ImageCard';
-import { Grid, List } from 'lucide-react';
+import { Grid, List, Loader2Icon } from 'lucide-react';
 import { useInfiniteImages } from '../hooks/useInfiniteImages';
 
 const Gallery = ({ searchQuery }) => {
-  const [selectedImage, setSelectedImage] = React.useState(null);
-  const [viewMode, setViewMode] = React.useState('grid');
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [viewMode, setViewMode] = useState('grid');
   const { ref, inView } = useInView();
 
   const {
@@ -21,7 +21,7 @@ const Gallery = ({ searchQuery }) => {
   } = useInfiniteImages();
 
   // Fetch next page when user scrolls to bottom
-  React.useEffect(() => {
+  useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
@@ -66,7 +66,7 @@ const Gallery = ({ searchQuery }) => {
     return (
       <div className="max-w-[1600px] mx-auto p-6">
         <div className="flex items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <Loader2Icon className="animate-spin rounded-full h-12 w-12 "/>
         </div>
       </div>
     );
@@ -120,9 +120,9 @@ const Gallery = ({ searchQuery }) => {
           ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'
           : 'flex flex-col gap-4'
       }>
-        {filteredImages.map((img) => (
+        {filteredImages.map((img,index) => (
           <ImageCard 
-            key={img.id} 
+            key={img.id + index} 
             image={img} 
             viewMode={viewMode}
             onClick={handleImageClick}
