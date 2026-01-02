@@ -1,431 +1,361 @@
 # GalleryStream 🖼️
 
-A modern, real-time image gallery application built with React, featuring WhatsApp-style emoji reactions, live comments, and beautiful animations.
+> A real-time image gallery with WhatsApp-style emoji reactions and live comments
 
-## 🌟 Features
 
-- **Real-time Interactions**: Instant reactions and comments powered by InstantDB
-- **WhatsApp-Style Reactions**: Users can select one emoji per image with visual feedback
-- **Emoji Picker**: Full emoji library with search functionality
-- **Live Activity Feed**: Real-time feed showing all user interactions
-- **Image Gallery**: Grid and list view modes with infinite scrolling
-- **Smooth Animations**: Subtle, performant animations throughout
-- **User Management**: Authentication with custom usernames
+## ✨ What It Does
+
+- 🖼️ Browse beautiful images from Unsplash
+- ❤️ React with emojis (WhatsApp-style: one per user)
+- 💬 Add & delete your own comments
+- ⚡ See updates in real-time across all users
+- 🎨 Smooth animations and modern UI
+
+[Live Demo](#) | [Report Bug](https://github.com/adi-de9/gallerystream/issues) | [Request Feature](https://github.com/adi-de9/gallerystream/issues)
+
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### 1. Install
 
-- Node.js (v16 or higher)
-- npm or yarn
-
-### Installation
-
-1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/adi-de9/gallerystream
 cd gallerystream
-```
-
-2. Install dependencies:
-```bash
 npm install
 ```
 
-3. Set up environment variables:
-Create a `.env` file in the root directory:
+### 2. Configure
+
+Create `.env` file:
+
 ```env
-VITE_UNSPLASH_ACCESS_KEY=your_unsplash_api_key
-VITE_INSTANT_APP_ID=your_instantdb_app_id
+VITE_UNSPLASH_ACCESS_KEY=your_key_here
+VITE_INSTANT_APP_ID=your_app_id_here
 ```
 
-4. Start the development server:
+**Get your keys:**
+- Unsplash: [unsplash.com/developers](https://unsplash.com/developers)
+- InstantDB: [instantdb.com](https://www.instantdb.com/)
+
+### 3. Run
+
 ```bash
 npm run dev
 ```
 
-5. Open [http://localhost:5173](http://localhost:5173) in your browser
+Open [localhost:5173](http://localhost:5173)
 
-## 📁 Project Structure
+## � Project Structure
 
 ```
 src/
-├── components/          # React components
-│   ├── AuthUser.jsx    # User authentication
-│   ├── Feed.jsx        # Activity feed
-│   ├── Gallery.jsx     # Image gallery with view modes
-│   ├── Header.jsx      # App header with user info
-│   ├── ImageCard.jsx   # Individual image card
-│   ├── ImageModal.jsx  # Full-screen image modal
-│   └── MainLayout.jsx  # App layout wrapper
-├── hooks/              # Custom React hooks
-│   ├── useImageInteractions.js   # Image reactions/comments
-│   ├── useInfiniteImages.js      # Infinite scroll
-│   └── useFeedInteractions.js    # Activity feed data
-├── lib/                # External services
-│   ├── instantdb.js    # InstantDB configuration
-│   └── unsplash.js     # Unsplash API client
-├── store/              # State management
-│   └── useUserStore.js # User state (Zustand)
-└── App.jsx             # Root component
+├── components/       # UI components
+├── hooks/           # Custom React hooks (data + logic)
+├── lib/             # External services (Unsplash, InstantDB)
+├── store/           # Global state (Zustand)
+└── utils/           # Helper functions
 ```
 
-## 🏗️ Architecture & Design Decisions
+**Key Files:**
+- `ImageModal.jsx` - Main interaction hub (reactions, comments)
+- `useImageInteractions.js` - Real-time data hook
+- `Gallery.jsx` - Infinite scroll gallery
 
-### Real-Time State Management
+## 🏗️ How It Works
 
-**InstantDB Integration**
-- Chosen for zero-backend real-time capabilities
-- Automatic subscriptions with `useQuery` hook
-- Optimistic updates for instant UI feedback
-- Transactional mutations ensure data consistency
+### Real-Time Architecture
+
+```
+User clicks emoji
+    ↓
+Component handler
+    ↓
+InstantDB transaction → Server
+    ↓
+Real-time subscription updates
+    ↓
+All users see change instantly ⚡
+```
+
+**Why InstantDB?**
+- Zero backend code needed
+- Automatic real-time subscriptions
+- Optimistic UI updates
+- Built-in conflict resolution
+
+### WhatsApp-Style Reactions
+
+**Problem:** How to let users express themselves without spam?
+
+**Solution:** One emoji per user, per image
 
 ```javascript
-// Example: Real-time reactions query
-const { data } = db.useQuery({
-  reactions: {
-    $: { where: { imageId } }
-  }
-});
+// Click emoji #1 → Adds reaction
+// Click emoji #2 → Replaces with #2
+// Click emoji #2 again → Removes reaction
 ```
 
-**State Architecture**
-- **Global State**: User data via Zustand (persistent across sessions)
-- **Server State**: InstantDB for real-time collaborative data
-- **Local State**: React useState for UI-only state (modals, forms)
-- **Derived State**: useMemo for performance optimization
+**Benefits:**
+- ✅ Clear user intent
+- ✅ No spam
+- ✅ Familiar pattern
+- ✅ Easy to change mind
 
-### React Patterns & Best Practices
+### Performance Optimizations
 
-**Performance Optimizations**
-1. **Memoization**: All expensive computations use `useMemo`
-   ```javascript
-   const reactionCounts = useMemo(() => {
-     return reactions.reduce((acc, curr) => {
-       acc[curr.emoji] = (acc[curr.emoji] || 0) + 1;
-       return acc;
-     }, {});
-   }, [reactions]);
-   ```
+| What | How | Why |
+|------|-----|-----|
+| **Memoization** | `useMemo`, `useCallback` | Prevent unnecessary re-renders |
+| **Lazy Loading** | `loading="lazy"` on images | Faster initial load |
+| **Infinite Scroll** | Intersection Observer | Load only what's visible |
+| **Animations** | GPU-accelerated (transform, opacity) | Smooth 60fps |
+| **Debounce** | Search input 300ms | Reduce API calls |
 
-2. **Callback Stability**: All event handlers use `useCallback`
-   ```javascript
-   const handleSubmitComment = useCallback((e) => {
-     e.preventDefault();
-     if (commentText.trim()) {
-       addComment(commentText.trim(), image.urls.thumb);
-       setCommentText('');
-     }
-   }, [commentText, addComment, image.urls.thumb]);
-   ```
+## 🎯 Key Features Explained
 
-3. **Component Memoization**: React.memo for pure components
-   ```javascript
-   export default React.memo(ImageCard);
-   ```
+### 1. Real-Time Comments
 
-4. **Lazy Loading**: Images load on-demand with `loading="lazy"`
+**How it works:**
+- Type comment → Save to InstantDB
+- Other users subscribe to same image
+- See new comments instantly
 
-5. **Infinite Scroll**: Intersection Observer for efficient pagination
+**User Experience:**
+- Auto-focus on input (start typing immediately)
+- Delete your own comments (trash icon on hover)
+- Newest comments first
 
-**Custom Hooks Pattern**
-- Encapsulate complex logic
-- Promote reusability
-- Separate concerns (data vs UI)
+### 2. Emoji Reactions
 
-Example: `useImageInteractions`
-```javascript
-export const useImageInteractions = (imageId) => {
-  // Data fetching
-  const { data } = db.useQuery({ ... });
-  
-  // Business logic
-  const addReaction = (emoji) => { ... };
-  
-  // Return clean interface
-  return { reactions, comments, addReaction, addComment };
-};
-```
+**Quick Reactions:**
+- 5 common emojis for fast access
+- Click to toggle
+- Count shows next to emoji
 
-### UX Decision-Making
+**Custom Emojis:**
+- Click "+ Add" button
+- Search from full emoji library
+- Replaces your current reaction
 
-**1. WhatsApp-Style Emoji Reactions**
-- **Why**: Familiar pattern, reduces decision fatigue
-- **Implementation**: One emoji per user, click to toggle
-- **Visual Feedback**: Blue highlight on selected emoji with ring effect
-- **Benefit**: Prevents spam, clear user intent
+**Visual Feedback:**
+- Blue highlight = your selection
+- Ring effect for emphasis
+- "You reacted with 😂" message
 
-**2. Staggered Animations**
-- **Why**: Draws attention without overwhelming
-- **Implementation**: 50ms delay per item in feed
-- **Benefit**: Professional feel, guides user's eye
+### 3. Activity Feed
 
-**3. Hover States Throughout**
-- **Why**: Provides affordance (shows what's clickable)
-- **Implementation**: Consistent scale/shadow effects
-- **Transitions**: 200-300ms for natural feel
+**Shows:**
+- Who reacted/commented
+- What image
+- When (time ago)
+- Thumbnail preview
 
-**4. Auto-focus Comment Input**
-- **Why**: Reduces friction for engagement
-- **Implementation**: `useEffect` with ref on modal mount
-- **Benefit**: User can start typing immediately
+**Updates:**
+- Real-time as actions happen
+- Staggered fade-in animation
+- Newest first
 
-**5. Click-Outside to Close**
-- **Why**: Standard modal pattern, improves UX
-- **Implementation**: Event listener with ref-based detection
-- **Benefit**: Intuitive escape hatch
+### 4. Gallery Views
 
-**6. Keyboard Shortcuts**
-- **ESC**: Close modal/picker
-- **Why**: Power users expect keyboard navigation
-- **Benefit**: Accessibility and efficiency
+**Grid View:** Cards with image preview
+**List View:** Compact with metadata
 
-**7. Delete on Hover**
-- **Why**: Prevents accidental deletion
-- **Implementation**: `opacity-0` → `group-hover:opacity-100`
-- **Benefit**: Clean UI until needed
+Both support:
+- Infinite scroll
+- Hover animations
+- View mode toggle
 
-**8. Real-time Feed Position**
-- **Why**: Keeps users engaged with activity
-- **Implementation**: Fixed sidebar with live updates
-- **Benefit**: Discoverability, social proof
+## 🔧 Tech Stack
 
-## 🎨 Component Documentation
+| Category | Technology | Purpose |
+|----------|-----------|---------|
+| **Framework** | React 18 | UI components |
+| **Build Tool** | Vite | Fast development |
+| **Database** | InstantDB | Real-time backend |
+| **Images** | Unsplash API | High-quality photos |
+| **State** | Zustand | Global state |
+| **Styling** | Tailwind CSS | Utility-first CSS |
+| **Icons** | Lucide React | Clean icons |
+| **Emojis** | emoji-picker-react | Emoji selection |
 
-### ImageModal
+## 💡 Design Decisions
 
-The centerpiece of the application - a full-screen modal for viewing images and interactions.
+### Why One Emoji Per User?
 
-**Features:**
-- Emoji reactions with picker
-- Comment system with delete
-- Real-time updates
-- Keyboard navigation
-- Click-outside to close
-- Auto-scroll lock
+**Considered:**
+- Unlimited reactions → Too chaotic, spam potential
+- Like only → Not expressive enough
+- Multiple emojis → Confusing intent
 
-**State Management:**
-```javascript
-// UI State
-const [commentText, setCommentText] = useState('');
-const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+**Chose:** WhatsApp model (one emoji)
 
-// Server State (Real-time)
-const { reactions, comments, addReaction, addComment, deleteComment } 
-  = useImageInteractions(image.id);
+**Result:** Clear, familiar, prevents spam
 
-// Derived State
-const userReaction = useMemo(() => 
-  reactions.find(r => r.userId === userId)
-, [reactions, userId]);
-```
+### Why Staggered Animations?
 
-**UX Enhancements:**
-- Staggered emoji animations
-- Smooth modal entry (zoom + fade)
-- Comment hover states
-- Emoji scale on hover
-- Delete confirmation via single click
+**Without:** All items appear at once (overwhelming)
+**With:** Cascading effect (50ms delay each)
 
-### Feed Component
+**Benefit:** Guides user's eye, feels polished
 
-Real-time activity feed showing all user interactions.
+### Why Auto-Focus Comment Input?
 
-**Key Features:**
-- Staggered entry animations
-- Time-ago formatting
-- User color coding
-- Image thumbnails
-- Empty states
+**Problem:** User has to click input to start typing
+**Solution:** Auto-focus on modal open
 
-**Performance:**
-```javascript
-// Memoize empty state check
-const isEmpty = useMemo(() => feedItems.length === 0, [feedItems.length]);
-```
+**Benefit:** One less click, faster interaction
 
-### Gallery Component
+### Why Delete on Hover?
 
-Image grid with dual view modes and infinite scroll.
+**Problem:** Delete button always visible = cluttered UI
+**Solution:** Show trash icon only on hover
 
-**View Modes:**
-1. **Grid**: Card-based, optimized for browsing
-2. **List**: Compact, shows more metadata
+**Benefit:** Clean interface, prevents accidents
 
-**Infinite Scroll Implementation:**
-```javascript
-const { ref: loadMoreRef, inView } = useInView({
-  threshold: 0.5,
-  triggerOnce: false,
-});
+## 📖 Usage Examples
 
-useEffect(() => {
-  if (inView && hasNextPage && !isFetchingNextPage) {
-    fetchNextPage();
-  }
-}, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
-```
-
-## 🔧 API Integration
-
-### Unsplash API
-- **Purpose**: Fetch high-quality images
-- **Rate Limit**: 50 requests/hour (demo mode)
-- **Pagination**: 12 images per page
-- **Search**: Debounced search with query params
-
-### InstantDB
-- **Purpose**: Real-time database for interactions
-- **Schema**:
-  ```javascript
-  {
-    reactions: { imageId, userId, userName, emoji, imageUrl, createdAt },
-    comments: { imageId, userId, userName, text, imageUrl, createdAt }
-  }
-  ```
-- **Features**: Automatic subscriptions, optimistic updates
-
-## 🎯 State Flow Diagram
+### Add a Reaction
 
 ```
-User Action (Click Emoji)
-    ↓
-Component Handler (handleReactionClick)
-    ↓
-Custom Hook (useImageInteractions.addReaction)
-    ↓
-InstantDB Transaction (db.transact)
-    ↓
-Server Update
-    ↓
-Real-time Subscription (db.useQuery)
-    ↓
-Component Re-render with New Data
-    ↓
-UI Update (Emoji highlighted)
+1. Click any image
+2. Click an emoji or "+" button
+3. Select emoji from picker (optional)
+4. See your selection highlighted
+5. Click again to remove
 ```
 
-## 🚀 Performance Optimizations
+### Add a Comment
 
-1. **Code Splitting**: Components lazy-loaded where beneficial
-2. **Image Optimization**: Multiple URL sizes from Unsplash
-3. **Memoization**: useMemo for all derived state
-4. **Callback Stability**: useCallback for all handlers
-5. **DOM Measurements**: IntersectionObserver (not scroll events)
-6. **CSS Animations**: GPU-accelerated transforms
-7. **Debouncing**: Search queries debounced 300ms
+```
+1. Click any image
+2. Type in the comment box (auto-focused)
+3. Press Enter or click Send
+4. See your comment appear instantly
+```
 
-## 🧪 Testing Guide
+### Delete Your Comment
 
-### Manual Testing Checklist
-
-**Authentication:**
-- [ ] Create user with username
-- [ ] Username persists across refresh
-- [ ] Different users see different "your reaction" states
-
-**Reactions:**
-- [ ] Click emoji → adds reaction
-- [ ] Click same emoji → removes reaction
-- [ ] Click different emoji → replaces reaction
-- [ ] Emoji picker opens and adds custom emoji
-- [ ] Only one emoji per user per image
-- [ ] Real-time updates from other users
-
-**Comments:**
-- [ ] Add comment appears instantly
-- [ ] Delete own comment (trash icon on hover)
-- [ ] Cannot delete other users' comments
-- [ ] Input auto-focuses on modal open
-- [ ] Empty state shows when no comments
-
-**Feed:**
-- [ ] Shows all reactions and comments
-- [ ] Time updates (refresh to see)
-- [ ] Staggered animation on load
-- [ ] Image thumbnails clickable
-
-**General UX:**
-- [ ] ESC closes modal
-- [ ] Click backdrop closes modal
-- [ ] Infinite scroll loads more images
-- [ ] Animations smooth (60fps)
-- [ ] No layout shifts
+```
+1. Hover over your comment
+2. Click trash icon (red)
+3. Comment removed instantly
+```
 
 ## 🛠️ Development
 
-### Available Scripts
+### Available Commands
 
 ```bash
-# Development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-
-# Lint code
-npm run lint
+npm run dev      # Start dev server
+npm run build    # Build for production
+npm run preview  # Preview production build
+npm run lint     # Check code quality
 ```
 
 ### Environment Variables
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `VITE_UNSPLASH_ACCESS_KEY` | Unsplash API key | Yes |
-| `VITE_INSTANT_APP_ID` | InstantDB app ID | Yes |
+| `VITE_UNSPLASH_ACCESS_KEY` | Unsplash API key | ✅ Yes |
+| `VITE_INSTANT_APP_ID` | InstantDB app ID | ✅ Yes |
 
-### Code Style
+### Code Structure Pattern
 
-- **Naming**: camelCase for functions, PascalCase for components
-- **Structure**: Props → State → Hooks → Handlers → Render
-- **Comments**: Only for complex logic, code should be self-documenting
-- **Formatting**: Prettier/ESLint default settings
+**Components:** Organized by feature
+```javascript
+// Container (data + logic)
+const Gallery = () => {
+  const { images } = useInfiniteImages();
+  return <GalleryView images={images} />;
+};
 
-## 📚 Key Learnings & Patterns
+// Presentation (UI only)
+const GalleryView = ({ images }) => {
+  return <div>{images.map(...)}</div>;
+};
+```
 
-### Real-Time State
-- Let server be source of truth
-- Optimistic updates for UX
-- Handle conflict resolution gracefully
+**Hooks:** Encapsulate logic
+```javascript
+// Custom hook handles all data/logic
+const useImageInteractions = (imageId) => {
+  const { data } = db.useQuery({...});
+  const addReaction = () => {...};
+  return { reactions, addReaction };
+};
+```
 
-### React Performance
-- Measure before optimizing
-- Memoize correctly (don't over-memoize)
-- Use production build for testing
+## 🎨 Customization
 
-### UX Design
-- Consistent patterns build familiarity
-- Animations should enhance, not distract
-- Empty states are important
-- Loading states prevent confusion
+### Change Quick Reaction Emojis
 
-### Code Organization
-- Separate data from presentation
-- Custom hooks for reusable logic
-- Components should have single responsibility
+Edit `src/utils/constants.js`:
+
+```javascript
+export const EMOJIS = ["❤️", "🔥", "👏", "😂", "😮"];
+// Change to your preferred emojis
+```
+
+### Adjust Animation Speed
+
+In components, change duration values:
+
+```javascript
+// Faster
+className="transition-all duration-150"
+
+// Slower
+className="transition-all duration-500"
+```
+
+### Change Image Load Count
+
+Edit `src/hooks/useInfiniteImages.js`:
+
+```javascript
+const fetchImages = async ({ pageParam = 1 }) => {
+  const images = await unsplash.getImages(searchQuery, pageParam, 12);
+  // Change 12 to load more/fewer images per page
+};
+```
+
+## 🐛 Troubleshooting
+
+**Images not loading?**
+- Check Unsplash API key in `.env`
+- Verify key is valid at unsplash.com/account
+
+**Reactions not working?**
+- Check InstantDB app ID in `.env`
+- Ensure you're logged in (enter username)
+
+**Slow performance?**
+- Build for production: `npm run build`
+- Check Network tab for heavy images
+
+**Animations janky?**
+- Check browser GPU acceleration
+- Reduce animation complexity in CSS
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1. Fork the repo
+2. Create feature branch: `git checkout -b feature-name`
+3. Commit changes: `git commit -m 'Add feature'`
+4. Push: `git push origin feature-name`
+5. Open Pull Request
 
 ## 📝 License
 
-MIT License - feel free to use this project for learning and development.
+MIT License - feel free to use for learning and projects!
 
-## 🙏 Acknowledgments
+## 🙏 Credits
 
-- **Unsplash** for beautiful imagery
-- **InstantDB** for real-time infrastructure
-- **Lucide React** for clean icons
-- **emoji-picker-react** for emoji selection
+- **Images:** [Unsplash](https://unsplash.com)
+- **Real-time DB:** [InstantDB](https://instantdb.com)
+- **Icons:** [Lucide](https://lucide.dev)
 
 ---
 
-Built with ❤️ using React, Vite, and InstantDB
+**Built with ❤️ using React + InstantDB**
+
