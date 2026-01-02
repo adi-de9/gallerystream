@@ -87,13 +87,6 @@ const ImageCard = ({ image, viewMode, onClick }) => {
 
         {/* Inline Reactions */}
         <div className="flex items-center gap-3 mt-3 pt-3 border-t border-gray-100">
-          {reactionStats.totalReactions > 0 && (
-            <div className="flex items-center gap-1.5 text-gray-700 transition-transform duration-200 hover:scale-110">
-              <Heart size={16} className="text-red-500" fill="currentColor" />
-              <span className="text-sm font-medium">{reactionStats.totalReactions}</span>
-            </div>
-          )}
-          
           {reactionStats.topEmojis.map(([emoji, count]) => (
             <div key={emoji} className="flex items-center gap-1 transition-transform duration-200 hover:scale-125">
               <span className="text-base">{emoji}</span>
@@ -106,10 +99,6 @@ const ImageCard = ({ image, viewMode, onClick }) => {
               <MessageCircle size={16} />
               <span className="text-sm font-medium">{comments.length}</span>
             </div>
-          )}
-
-          {reactionStats.totalReactions === 0 && comments.length === 0 && (
-            <p className="text-xs text-gray-400 italic">No reactions yet</p>
           )}
         </div>
       </div>
