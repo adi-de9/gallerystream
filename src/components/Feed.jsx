@@ -55,22 +55,27 @@ const Feed = () => {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {feedItems.map((item, index) => {
         const initial = item.userName.charAt(0).toUpperCase();
         const bgColor = getUserColor(item.userName);
+        // Check if item is recent (within last 10 seconds)
+        const isNew = Date.now() - item.createdAt < 10000;
 
         return (
           <div 
             key={item.id} 
-            className="flex gap-3 p-2 rounded-lg -mx-2 transition-all duration-300 hover:bg-gray-50 hover:shadow-sm hover:-translate-x-1 animate-in fade-in slide-in-from-bottom-3"
+            className={`flex gap-3 p-3 rounded-lg transition-all duration-300 hover:bg-gray-50 animate-in fade-in slide-in-from-bottom-2 ${
+              isNew ? 'bg-blue-50/30' : ''
+            }`}
             style={{
               animationDelay: `${index * 50}ms`,
-              animationFillMode: 'backwards'
+              animationFillMode: 'backwards',
+              animationDuration: '400ms'
             }}
           >
             {/* User Avatar */}
-            <div className={`w-10 h-10 rounded-full bg-linear-to-br ${bgColor} flex items-center justify-center text-white font-semibold text-sm shrink-0 transition-transform duration-200 hover:scale-110`}>
+            <div className={`w-9 h-9 rounded-full bg-linear-to-br ${bgColor} flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm`}>
               {initial}
             </div>
 
@@ -78,30 +83,28 @@ const Feed = () => {
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm leading-relaxed">
+                  <p className="text-sm leading-relaxed text-gray-700">
                     <span className="font-semibold text-gray-900">{item.userName}</span>
                     {item.type === 'reaction' ? (
                       <>
-                        {' '}reacted{' '}
-                        <span className="text-base inline-block transition-transform duration-200 hover:scale-125">{item.emoji}</span>
-                        {' '}to{' '}
-                        <span className="text-blue-600 hover:underline cursor-pointer">
-                          image
-                        </span>
+                        <span className="text-gray-600"> reacted </span>
+                        <span className="text-xl inline-block align-middle">{item.emoji}</span>
+                        <span className="text-gray-600"> to an image</span>
                       </>
                     ) : (
                       <>
-                        {' '}commented:{' '}
-                        <span className="text-gray-600">"{item.text.length > 50 ? item.text.slice(0, 50) + '...' : item.text}"</span>
+                        <span className="text-gray-600"> commented: </span>
+                        <span className="text-gray-700 italic">"{item.text.length > 45 ? item.text.slice(0, 45) + '...' : item.text}"</span>
                       </>
                     )}
+                    <span className="text-gray-400"> · </span>
+                    <span className="text-xs text-gray-500 font-medium">{getTimeAgo(item.createdAt)}</span>
                   </p>
-                  <p className="text-xs text-gray-500 mt-0.5">{getTimeAgo(item.createdAt)}</p>
                 </div>
 
                 {/* Thumbnail */}
                 {item.imageUrl && (
-                  <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0 transition-transform duration-200 hover:scale-105 hover:shadow-md">
+                  <div className="w-11 h-11 rounded-lg overflow-hidden bg-gray-100 shrink-0 ring-1 ring-gray-200 transition-transform duration-200 hover:scale-110">
                     <img 
                       src={item.imageUrl} 
                       alt="Context" 
