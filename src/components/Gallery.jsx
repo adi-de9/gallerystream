@@ -5,7 +5,7 @@ import ImageCard from './ImageCard';
 import { Grid, List, Loader2Icon } from 'lucide-react';
 import { useInfiniteImages } from '../hooks/useInfiniteImages';
 
-const Gallery = ({ searchQuery }) => {
+const Gallery = ({ searchQuery, highlightedImageId }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [viewMode, setViewMode] = useState('grid');
   const { ref, inView } = useInView();
@@ -126,6 +126,7 @@ const Gallery = ({ searchQuery }) => {
             image={img} 
             viewMode={viewMode}
             onClick={handleImageClick}
+            isHighlighted={img.id === highlightedImageId}
           />
         ))}
       </div>

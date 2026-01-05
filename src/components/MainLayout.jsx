@@ -7,6 +7,8 @@ const MainLayout = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeView, setActiveView] = useState("gallery");
 
+  const [highlightedImageId, setHighlightedImageId] = useState(null);
+
   const handleViewChange = (view) => {
     setActiveView(view);
   };
@@ -23,7 +25,10 @@ const MainLayout = () => {
       <main className="flex-1 flex overflow-hidden">
         {/* Gallery Area */}
         <div className="flex-1 relative overflow-y-auto">
-          <Gallery searchQuery={searchQuery} />
+          <Gallery 
+            searchQuery={searchQuery} 
+            highlightedImageId={highlightedImageId}
+          />
         </div>
 
         {/* Right Sidebar - Live Activity */}
@@ -38,7 +43,7 @@ const MainLayout = () => {
             </div>
           </div>
           <div className="flex-1 overflow-y-auto p-4">
-            <Feed />
+            <Feed setHighlightedImageId={setHighlightedImageId} />
           </div>
           <div className="p-4 border-t border-gray-200">
             <button className="text-xs text-gray-600 hover:text-gray-900 w-full text-center">

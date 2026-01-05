@@ -27,11 +27,12 @@ const getUserColor = (userName) => {
   return bgColors[colorIndex];
 };
 
-const Feed = () => {
+const Feed = ({ setHighlightedImageId }) => {
   const { feedItems, isLoading } = useFeedInteractions();
 
   // Memoize empty state
   const isEmpty = useMemo(() => feedItems.length === 0, [feedItems.length]);
+  console.log(feedItems);
 
   if (isLoading) {
     return (
@@ -104,7 +105,12 @@ const Feed = () => {
 
                 {/* Thumbnail */}
                 {item.imageUrl && (
-                  <div className="w-11 h-11 rounded-lg overflow-hidden bg-gray-100 shrink-0 ring-1 ring-gray-200 transition-transform duration-200 hover:scale-110">
+                  <div 
+                    className="w-11 h-11 rounded-lg overflow-hidden bg-gray-100 shrink-0 ring-1 ring-gray-200 transition-transform duration-200 hover:scale-110 cursor-pointer"
+                    onMouseEnter={() => setHighlightedImageId && setHighlightedImageId(item.imageId)}
+                    onMouseLeave={() => setHighlightedImageId && setHighlightedImageId(null)}
+                    onClick={() => setHighlightedImageId && setHighlightedImageId(item.imageId)}
+                  >
                     <img 
                       src={item.imageUrl} 
                       alt="Context" 

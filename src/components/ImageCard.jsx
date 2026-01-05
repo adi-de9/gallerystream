@@ -1,8 +1,8 @@
 import React, { useMemo, useCallback } from 'react';
 import { useImageInteractions } from '../hooks/useImageInteractions';
-import { Heart, MessageCircle } from 'lucide-react';
+import {  MessageCircle } from 'lucide-react';
 
-const ImageCard = ({ image, viewMode, onClick }) => {
+const ImageCard = ({ image, viewMode, onClick, isHighlighted }) => {
   const { reactions, comments } = useImageInteractions(image.id);
 
   // Memoize reaction calculations
@@ -26,11 +26,15 @@ const ImageCard = ({ image, viewMode, onClick }) => {
 
   const timeAgo = '2h ago'; // Mock time
 
+  const highlightClass = isHighlighted 
+    ? 'border-blue-500 ring-4 ring-blue-500/20 shadow-lg scale-[1.02] z-10' 
+    : 'border-gray-200 shadow-sm hover:shadow-md hover:scale-[1.005]';
+
   if (viewMode === 'list') {
     return (
       <div 
         onClick={handleClick}
-        className="bg-white rounded-xl border border-gray-200 p-4 flex gap-4 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer hover:scale-[1.005]"
+        className={`bg-white rounded-xl border p-4 flex gap-4 transition-all duration-300 cursor-pointer ${highlightClass}`}
       >
         <div className="w-28 h-28 overflow-hidden rounded-lg shrink-0 relative group/img bg-gray-100">
           <img 
@@ -66,7 +70,11 @@ const ImageCard = ({ image, viewMode, onClick }) => {
   return (
     <div 
       onClick={handleClick}
-      className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group hover:scale-[1.01]"
+      className={`bg-white rounded-xl border overflow-hidden transition-all duration-300 cursor-pointer group ${
+        isHighlighted 
+          ? 'border-blue-500 ring-4 ring-blue-500/20 shadow-lg scale-[1.02] z-10' 
+          : 'border-gray-200 shadow-sm hover:shadow-lg hover:scale-[1.01]'
+      }`}
     >
       {/* Image */}
       <div className="aspect-3/4 relative overflow-hidden bg-gray-100">
